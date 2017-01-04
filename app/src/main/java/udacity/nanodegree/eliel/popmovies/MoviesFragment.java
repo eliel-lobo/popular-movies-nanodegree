@@ -1,7 +1,9 @@
 package udacity.nanodegree.eliel.popmovies;
 
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.util.Log;
@@ -27,7 +29,8 @@ import java.util.ArrayList;
  */
 public class MoviesFragment extends Fragment {
 
-    MovieArrayAdapter movieAdapter;
+    private MovieArrayAdapter movieAdapter;
+    private String prefSortBy;
 
     public MoviesFragment() {
     }
@@ -43,7 +46,7 @@ public class MoviesFragment extends Fragment {
 
         GridView listView = (GridView) rootView.findViewById(R.id.gridview_movies);
         listView.setAdapter(movieAdapter);
-        listView.setOnScrollListener(new PaginatedScrollListener());
+        listView.setOnScrollListener(new PaginatedScrollListener(10, 0));
 
         return  rootView;
     }
@@ -51,7 +54,32 @@ public class MoviesFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        new FetchMoviesTask().execute();
+        reloadMovies();
+    }
+
+    private void reloadMovies() {
+        String prefSortByNewValue = getPreferenceString(R.string.pref_sort_by_key,
+                R.string.pref_sort_by_default);
+
+        // only reload if is the first time (prefSortBy is null) or if pref value changed
+        if (!prefSortByNewValue.equals(prefSortBy)) {
+            prefSortBy = prefSortByNewValue;
+            movieAdapter.clear();
+            new FetchMoviesTask().execute("1");
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+    }
+
+    private String getPreferenceString(int preferenceKey, int preferenceDefault) {
+
+        SharedPreferences sharedPreferences = PreferenceManager.
+                getDefaultSharedPreferences(getActivity());
+
+        return sharedPreferences.getString(getString(preferenceKey), getString(preferenceDefault));
     }
 
     public class FetchMoviesTask extends AsyncTask<String, Void, Movie[]> {
@@ -68,13 +96,15 @@ public class MoviesFragment extends Fragment {
 
             try {
 
-                Uri movies = Uri.parse("http://api.themoviedb.org/3/movie/popular")
+                Uri movies = Uri.parse("http://api.themoviedb.org/3/movie/")
                         .buildUpon()
+                        .appendPath(prefSortBy)
                         .appendQueryParameter("api_key", "6668532f4b222777bc6e054318e9850b")
                         .appendQueryParameter("page", String.valueOf(currentPage))
                         .build();
 
                 URL url = new URL(movies.toString());
+                Log.v(LOG_TAG, "calling " + url);
 
                 urlConnection = (HttpURLConnection) url.openConnection();
                 urlConnection.setRequestMethod("GET");
@@ -103,7 +133,6 @@ public class MoviesFragment extends Fragment {
                     return null;
                 }
                 jsonMovies = buffer.toString();
-                Log.v(LOG_TAG, "got movies " + jsonMovies);
 
                 try {
                     return getMoviesFromJson(jsonMovies);
@@ -160,7 +189,7 @@ public class MoviesFragment extends Fragment {
             // True if we are still waiting for the last set of data to load.
             private boolean loading = true;
             // Sets the starting page index
-            private int startingPageIndex = 2;
+            private int startingPageIndex = 1;
 
             public PaginatedScrollListener() {
             }
@@ -210,7 +239,7 @@ public class MoviesFragment extends Fragment {
 
             // Defines the process for actually loading more data based on page
             public void onLoadMore(int page, int totalItemsCount) {
-                new FetchMoviesTask().execute(String.valueOf(page));
+                new FetchMoviesTask().execute(String.valueOf(page), prefSortBy);
             }
 
             @Override
