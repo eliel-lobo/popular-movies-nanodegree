@@ -9,10 +9,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
+
+import udacity.nanodegree.eliel.popmovies.util.Utils;
 
 /**
  * Created by eliel on 12/30/2016.
@@ -42,9 +45,11 @@ public class MovieArrayAdapter extends ArrayAdapter<Movie> {
                 .appendEncodedPath(movieItem.getThumbnailUrl())
                 .build();
 
-        Log.v(LOG_TAG, "Loading Image from " + posterUri.toString());
-
-        Picasso.with(getContext()).load(posterUri).into(imageView);
+        Picasso.with(getContext())
+                .load(posterUri)
+                .placeholder(R.mipmap.movie_cover_placeholder)
+                .error(R.mipmap.movie_cover_placeholder)
+                .into(imageView);
 
         return convertView;
     }

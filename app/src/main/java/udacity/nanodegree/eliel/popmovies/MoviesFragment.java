@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -25,6 +26,8 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+
+import udacity.nanodegree.eliel.popmovies.util.Utils;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -76,6 +79,11 @@ public class MoviesFragment extends Fragment {
     }
 
     private void reloadMovies() {
+
+        if (!Utils.isOnline(getActivity())) {
+            Toast.makeText(getActivity(), R.string.toast_no_internet, Toast.LENGTH_LONG).show();
+        }
+
         String prefSortByNewValue = getPreferenceString(R.string.pref_sort_by_key,
                 R.string.pref_sort_by_default);
 
