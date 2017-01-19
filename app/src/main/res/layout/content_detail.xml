@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="udacity.nanodegree.eliel.popmovies.DetailActivity"
+    tools:showIn="@layout/activity_detail">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="30dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/detail_released_textview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/text_margin"
+                android:layout_weight="1"
+                android:layout_gravity="center"/>
+
+            <FrameLayout
+                android:layout_width="@dimen/rating_size"
+                android:layout_height="@dimen/rating_size"
+                app:layout_anchor="@id/app_bar"
+                android:layout_margin="@dimen/fab_margin"
+                app:layout_anchorGravity="bottom|end">
+
+                <ImageView
+                    android:id="@+id/fab"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:srcCompat="@mipmap/ic_hearth" />
+
+                <TextView
+                    android:id="@+id/detail_rating_fab"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:textColor="@android:color/white"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:paddingBottom="@dimen/rating_text_bottom_padding"/>
+
+            </FrameLayout>
+        </LinearLayout>
+
+    <TextView
+        android:id="@+id/detail_overview_textview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/text_margin"/>
+
+    </LinearLayout>
+
+</android.support.v4.widget.NestedScrollView>

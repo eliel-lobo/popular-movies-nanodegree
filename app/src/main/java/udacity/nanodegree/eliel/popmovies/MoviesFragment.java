@@ -1,5 +1,6 @@
 package udacity.nanodegree.eliel.popmovies;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -11,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
+import android.widget.AdapterView;
 import android.widget.GridView;
 
 import org.json.JSONArray;
@@ -44,9 +46,25 @@ public class MoviesFragment extends Fragment {
         movieAdapter = new MovieArrayAdapter(getActivity(), R.layout.list_item_movie,
                 new ArrayList<Movie>());
 
-        GridView listView = (GridView) rootView.findViewById(R.id.gridview_movies);
-        listView.setAdapter(movieAdapter);
-        listView.setOnScrollListener(new PaginatedScrollListener(10, 0));
+        GridView gridView = (GridView) rootView.findViewById(R.id.gridview_movies);
+        gridView.setAdapter(movieAdapter);
+        gridView.setOnScrollListener(new PaginatedScrollListener(10, 0));
+        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Movie theMovie = movieAdapter.getItem(position);
+                Intent detailIntent = new Intent(getActivity(), DetailActivity.class);
+
+                detailIntent.putExtra(Movie.EXTRA_NAME, theMovie.getName());
+                detailIntent.putExtra(Movie.EXTRA_OVERVIEW, theMovie.getOverview());
+                detailIntent.putExtra(Movie.EXTRA_RATING, theMovie.getRating());
+                detailIntent.putExtra(Movie.EXTRA_RELEASE_DATE, theMovie.getReleaseDate());
+                detailIntent.putExtra(Movie.EXTRA_THUMBNAIL_URL, theMovie.getThumbnailUrl());
+
+                startActivity(detailIntent);
+            }
+        });
+
 
         return  rootView;
     }
@@ -159,6 +177,9 @@ public class MoviesFragment extends Fragment {
             final String RESULTS = "results";
             final String POSTER_PATH = "poster_path";
             final String NAME = "original_title";
+            final String OVERVIEW = "overview";
+            final String RELEASE_DATE = "release_date";
+            final String VOTE_AVERAGE = "vote_average";
 
             JSONObject jsonMovies = new JSONObject(jsonMoviesStr);
             JSONArray moviesArray = jsonMovies.getJSONArray(RESULTS);
@@ -167,9 +188,13 @@ public class MoviesFragment extends Fragment {
             for (int i = 0; i < moviesArray.length(); i++) {
                 JSONObject jsonMovieObj = moviesArray.getJSONObject(i);
                 Movie movie = new Movie();
+
                 movie.setName(jsonMovieObj.getString(NAME));
-                Log.v(LOG_TAG, "parsing movie " + jsonMovieObj.getString(NAME));
+                movie.setOverview(jsonMovieObj.getString(OVERVIEW));
                 movie.setPosterPath(jsonMovieObj.getString(POSTER_PATH));
+                movie.setRating(jsonMovieObj.getDouble(VOTE_AVERAGE));
+                movie.setReleaseDate(jsonMovieObj.getString(RELEASE_DATE));
+
                 toReturn[i] = movie;
             }
 
