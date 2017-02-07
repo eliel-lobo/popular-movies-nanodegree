@@ -125,7 +125,7 @@ public class MoviesFragment extends Fragment {
                 Uri movies = Uri.parse("http://api.themoviedb.org/3/movie/")
                         .buildUpon()
                         .appendPath(prefSortBy)
-                        .appendQueryParameter("api_key", "6668532f4b222777bc6e054318e9850b")
+                        .appendQueryParameter("api_key", BuildConfig.TMDB_API_KEY)
                         .appendQueryParameter("page", String.valueOf(currentPage))
                         .build();
 
